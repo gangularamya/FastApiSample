@@ -75,6 +75,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'GHActionsFastapiSample'
+          app-name: 'pyaseapp'
           slot-name: 'Production'
           startup-command: 'gunicorn --worker-class uvicorn.workers.UvicornWorker --timeout 600 --access-logfile "-" --error-logfile "-" main:app'
