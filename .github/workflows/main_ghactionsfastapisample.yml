@@ -52,6 +52,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
+      id-token: write # This is required for requesting the JWT
       contents: read # This is required for actions/checkout
 
     steps:
@@ -62,6 +63,14 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
         
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
@@ -69,5 +78,4 @@ jobs:
         with:
           app-name: 'pyaseapp'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
           startup-command: 'gunicorn --worker-class uvicorn.workers.UvicornWorker --timeout 600 --access-logfile "-" --error-logfile "-" main:app'
